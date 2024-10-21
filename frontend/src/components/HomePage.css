@@ -1,0 +1,16 @@
+/* HomePage.css */
+.home-page {
+    display: flex;
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 垂直居中 */
+    height: calc(100vh - 200px); /* 减去 Header 和 Footer 的高度，适当调整 */
+    background-color: white; /* 背景色为白色 */
+  }
+  
+  .main-title {
+    font-size: 2.5rem; /* 大标题字体大小，适度调整 */
+    color: #2c3e50; /* 深蓝色字体 */
+    font-weight: bold; /* 加粗标题 */
+    margin: 0; /* 去除外边距 */
+  }
+  

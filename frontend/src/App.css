@@ -1,0 +1,125 @@
+/* 保留之前的样式 */
+
+/* HomePage 样式 */
+.home-page {
+  background-color: #f8f9fa;
+  padding: 20px;
+}
+
+.main-content {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.left-column {
+  flex: 2;
+  margin-right: 20px;
+}
+
+.right-column {
+  flex: 1;
+}
+
+.java-architecture {
+  background-color: #4e54c8;
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.java-architecture h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  background-color: #ffd700;
+  color: #333;
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+.topics {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.topic {
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.latest-article {
+  display: flex;
+  background-color: white;
+  margin-top: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.latest-article img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
+
+.latest-article div {
+  padding: 10px;
+}
+
+.card {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card h3 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.project-topics, .interview-topics, .project-details, .interview-details {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.project-topics span, .interview-topics span {
+  background-color: #f0f0f0;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 20px;
+}
+
+.project-details span, .interview-details span {
+  background-color: #e0e0e0;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 4px;
+}
+
+.qr-code {
+  width: 100px;
+  height: 100px;
+  margin-top: 10px;
+}
+
+/* 添加响应式设计 */
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+  }
+
+  .left-column, .right-column {
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+}
