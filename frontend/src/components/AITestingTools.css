@@ -1,0 +1,103 @@
+.ai-testing-tools {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .ai-testing-tools h2 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.5em;
+    font-weight: 700;
+  }
+  
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .tool-card-link {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  .tool-card {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 400px;
+    overflow-y: auto;
+  }
+  
+  .tool-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .tool-logo {
+    width: 150px;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .tool-logo img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+  
+  .tool-card h3 {
+    margin: 0 0 10px;
+    color: #333;
+    font-size: 1.2em;
+    font-weight: 600;
+  }
+  
+  .tool-card p {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.4;
+    max-height: 150px;
+    overflow-y: auto;
+  }
+  
+  @media (max-width: 768px) {
+    .tool-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+  
+    .tool-logo {
+      width: 120px;
+      height: 120px;
+    }
+  
+    .tool-card h3 {
+      font-size: 1.1em;
+    }
+  
+    .tool-card p {
+      font-size: 0.8em;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .ai-testing-tools h2 {
+      font-size: 2em;
+    }
+  
+    .tool-grid {
+      grid-template-columns: 1fr;
+    }
+  }

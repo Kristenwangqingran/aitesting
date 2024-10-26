@@ -14,7 +14,7 @@ function Footer() {
         <div className="footer-column">
           <h3>快速导航</h3>
           <ul>
-            <li><a href="/ai-empowerment">AI赋能</a></li>
+            <li><a href="/ai-enhanced">AI赋能</a></li>
             <li><a href="/projects">项目实战</a></li>
             <li><a href="/interviews">大厂面试</a></li>
           </ul>
