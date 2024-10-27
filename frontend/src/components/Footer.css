@@ -1,72 +1,106 @@
 /* Footer.css */
 .footer {
-  background-color: #2c3e50; /* 深蓝色背景 */
-  color: white; /* 字体颜色 */
-  padding: 2rem 1.5rem; /* 上下内边距适中 */
+  background-color: #2c3e50;
+  color: white;
+  padding: 2rem 1.5rem;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 3% 0 5%;
 }
 
 .footer-row {
-  display: flex; /* 使用 Flexbox 进行布局 */
-  justify-content: space-between; /* 左右分布 */
-  margin-bottom: 1rem; /* 行间距 */
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
 }
 
 .footer-column {
-  flex: 1; /* 各列均分空间 */
-  margin-right: 2rem; /* 列间距 */
+  flex: 1;
+  margin-right: 5rem; /* 增加列之间的间距 */
+  display: flex;
+  flex-direction: column;
 }
 
 .footer-column:last-child {
-  margin-right: 0; /* 最后一列不需要右边距 */
+  margin-right: 0;
 }
 
+/* 以下所有样式保持完全不变 */
 .footer h3 {
-  margin-bottom: 0.5rem; /* 标题与内容之间的间距 */
-  font-size: 1.2rem; /* 标题字体大小 */
-  font-weight: bold; /* 加粗标题 */
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  text-align: left;
+}
+
+.footer-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
 }
 
 .footer p {
-  margin: 0.3rem 0; /* 段落之间的间距 */
-  font-size: 0.85rem; /* 段落字体大小 */
+  margin: 0.3rem 0;
+  font-size: 0.85rem;
 }
 
 .footer ul {
-  list-style: none; /* 移除列表默认样式 */
-  padding: 0; /* 去除内边距 */
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .footer ul li {
-  margin: 0.3rem 0; /* 列表项之间的垂直间距 */
+  margin: 0.3rem 0;
 }
 
 .footer a {
-  color: white; /* 确保链接颜色与标题一致 */
-  text-decoration: none; /* 移除下划线 */
-  transition: color 0.3s; /* 悬停时颜色变化 */
-  font-size: 0.9rem; /* 链接字体大小，适度增大 */
-  font-weight: normal; /* 去除加粗 */
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s;
+  font-size: 0.9rem;
+  font-weight: normal;
 }
 
 .footer a:hover {
-  color: #f39c12; /* 悬停时变成橙色 */
+  color: #f39c12;
 }
 
 .footer-row:last-child {
-  text-align: center; /* 备案号行居中 */
-  margin-top: 1rem; /* 与上面行的间距 */
-  font-size: 0.75rem; /* 备案号和链接字体大小一致 */
-  font-weight: normal; /* 去除加粗 */
-  color: #b0b0b0; /* 备案号的颜色为灰色 */
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 1rem;
+  font-size: 0.75rem;
+  font-weight: normal;
+  color: #b0b0b0;
 }
 
 .footer-row:last-child a {
-  color: #b0b0b0; /* 备案号后面的链接颜色为灰色 */
-  font-size: 0.75rem; /* 备案号后面的链接字体大小与备案号一致 */
-  transition: color 0.3s; /* 添加过渡效果 */
+  color: #b0b0b0;
+  font-size: 0.75rem;
+  transition: color 0.3s;
+  margin-left: 10px;
 }
 
 .footer-row:last-child a:hover {
-  color: #f39c12; /* 悬停时变成橙色 */
+  color: #f39c12;
 }
 
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .footer-row {
+    flex-direction: column;
+  }
+
+  .footer-column {
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
+}
