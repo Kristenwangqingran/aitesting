@@ -1,11 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import AIEnhancedPage from './pages/AIEnhancedPage';
 import Header from './components/Header';
-import HomePage from './components/HomePage';
-import InterviewPage from './components/InterviewPage';
-import TestingProjects from './components/TestingProjects'; // 新增导入
 import Footer from './components/Footer';
+import HomePage from './components/HomePage';
+import InterviewsPage from './components/InterviewsPage';
 import './App.css';
 
 function App() {
@@ -13,16 +11,27 @@ function App() {
     <Router>
       <div className="App">
         <Header />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/interviews" element={<InterviewPage />} />
-          <Route path="/ai-enhanced" element={<AIEnhancedPage />} />
-          <Route path="/projects" element={<TestingProjects />} /> {/* 新增路由 */}
-          {/* Add other routes as needed */}
-        </Routes>
+        <main className="App-content">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/interviews" element={<InterviewsPage />} />
+            <Route path="/ai-enhanced" element={<ComingSoon />} />
+            <Route path="/projects" element={<ComingSoon />} />
+          </Routes>
+        </main>
         <Footer />
       </div>
     </Router>
+  );
+}
+
+// 临时的 ComingSoon 组件，用于尚未实现的页面
+function ComingSoon() {
+  return (
+    <div style={{ textAlign: 'center', padding: '50px' }}>
+      <h2>Coming Soon</h2>
+      <p>This page is under construction. Please check back later.</p>
+    </div>
   );
 }
 
