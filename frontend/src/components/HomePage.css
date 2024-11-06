@@ -5,6 +5,10 @@
     align-items: center; /* 垂直居中 */
     height: calc(100vh - 200px); /* 减去 Header 和 Footer 的高度，适当调整 */
     background-color: white; /* 背景色为白色 */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
   }
   
   .main-title {
@@ -14,3 +18,207 @@
     margin: 0; /* 去除外边距 */
   }
   
+  .hero {
+    text-align: center;
+    padding: 60px 0;
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    color: white;
+    border-radius: 10px;
+    margin-bottom: 40px;
+  }
+  
+  .hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .hero h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+  }
+  
+  .hero p {
+    font-size: 1.2em;
+    margin-bottom: 30px;
+  }
+  
+  .features {
+    margin-bottom: 40px;
+  }
+  
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+  }
+  
+  .feature-item {
+    text-align: center;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    transition: transform 0.3s;
+  }
+  
+  .feature-item:hover {
+    transform: translateY(-5px);
+  }
+  
+  .feature-item i {
+    font-size: 2.5em;
+    color: #6e8efb;
+    margin-bottom: 15px;
+  }
+  
+  .latest-content, .testimonials {
+    margin-bottom: 50px;
+  }
+  
+  .cta {
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    padding: 50px;
+    border-radius: 10px;
+  }
+  
+  .cta-button {
+    display: inline-block;
+    background-color: #ff6b6b;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s;
+  }
+  
+  .cta-button:hover {
+    background-color: #ff8787;
+  }
+  
+  .courses {
+    margin-bottom: 50px;
+  }
+  
+  h2 {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 30px;
+    color: #333;
+  }
+  
+  .course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+  }
+  
+  .course-card {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+  }
+  
+  .course-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .course-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .course-card h3 {
+    padding: 15px;
+    margin: 0;
+    font-size: 1.2em;
+  }
+  
+  .course-card p {
+    padding: 0 15px 15px;
+    color: #666;
+  }
+  
+  .course-link {
+    display: block;
+    text-align: center;
+    background-color: #6e8efb;
+    color: white;
+    padding: 10px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+  }
+  
+  .course-link:hover {
+    background-color: #5c7cfa;
+  }
+  
+  .testimonial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+  }
+  
+  .testimonial-card {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  
+  .testimonial-author {
+    font-style: italic;
+    color: #666;
+    margin-top: 10px;
+  }
+  
+  .cta-section {
+    background-color: #6e8efb;
+    color: white;
+    text-align: center;
+    padding: 50px;
+    border-radius: 10px;
+  }
+  
+  .cta-section h2 {
+    color: white;
+  }
+  
+  .cta-section .cta-button {
+    background-color: white;
+    color: #6e8efb;
+  }
+  
+  .cta-section .cta-button:hover {
+    background-color: #f0f0f0;
+  }
+
+.feature-link {
+  display: inline-block;
+  margin-top: 10px;
+  color: #6e8efb;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.feature-link:hover {
+  text-decoration: underline;
+}
+
+.about {
+  background-color: #f8f9fa;
+  padding: 40px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.about p {
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+  color: #333;
+}

@@ -9,7 +9,7 @@ function Header() {
         <h1 className="logo">KristenWang</h1>
         <nav>
           <ul>
-            <li><Link to="/ai-enhanced">AI赋能测试</Link></li>
+            <li><Link to="/ai-testing">AI赋能</Link></li>
             <li><Link to="/projects">项目实战</Link></li>
             <li><Link to="/interviews">大厂面试</Link></li>
             <li><Link to="/about">关于</Link></li>
