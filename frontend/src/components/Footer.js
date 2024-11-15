@@ -17,7 +17,7 @@ function Footer() {
             <h3>快速导航</h3>
             <div className="footer-content">
               <ul>
-                <li><a href="/ai-enhanced">AI赋能</a></li>
+                <li><a href="/ai-enhanced">AI赋能测试</a></li>
                 <li><a href="/projects">项目实战</a></li>
                 <li><a href="/interviews">大厂面试</a></li>
               </ul>
