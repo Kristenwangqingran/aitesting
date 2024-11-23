@@ -11,27 +11,42 @@ const ModalLoginRegister = ({ onClose }) => {
     e.preventDefault();
     try {
       if (isLogin) {
-        const response = await axios.post('http://localhost:5000/api/auth/login', {
-          phone,
-          password
+        const response = await fetch(`${API_BASE_URL}/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            phone,
+            password
+          })
         });
-        if (response.data.success) {
-          localStorage.setItem('token', response.data.token);
-          onClose();
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            localStorage.setItem('token', data.token);
+            onClose();
+          }
         }
       } else {
-        const response = await axios.post('http://localhost:5000/api/auth/register', {
-          nickname,
-          phone,
-          password
+        const response = await fetch(`${API_BASE_URL}/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            nickname,
+            phone,
+            password
+          })
         });
-        if (response.data.success) {
+        if (response.ok) {
           alert('注册成功！');
           setIsLogin(true);
         }
       }
     } catch (error) {
-      alert(error.response?.data?.message || '操作失败');
+      alert(error.message || '操作失败');
     }
   };
 
@@ -42,10 +57,16 @@ const ModalLoginRegister = ({ onClose }) => {
       return;
     }
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/forgot-password', {
-        phone
+      const response = await fetch(`${API_BASE_URL}/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          phone
+        })
       });
-      if (response.data.success) {
+      if (response.ok) {
         alert('重置密码链接已发送到您的手机');
       }
     } catch (error) {
@@ -55,8 +76,8 @@ const ModalLoginRegister = ({ onClose }) => {
 
   const handleWechatLogin = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/auth/wechat/login');
-      window.location.href = response.data.auth_url;
+      const response = await fetch(`${API_BASE_URL}/wechat/login`);
+      window.location.href = response.auth_url;
     } catch (error) {
       alert('微信登录失败');
     }
