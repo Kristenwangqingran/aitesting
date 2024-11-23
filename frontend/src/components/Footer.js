@@ -1,5 +1,6 @@
 import React from 'react';
 import './Footer.css';
+import qrcode from '../assets/qrcode.jpg';
 
 function Footer() {
   return (
@@ -24,12 +25,14 @@ function Footer() {
             </div>
           </div>
           <div className="footer-column">
-            <h3>联系我</h3>
-            <ul>
-              <li><a href="/about">关于我</a></li>
-              <li><a href="/contact">联系我</a></li>
-              <li><a href="/message">留言我</a></li>
-            </ul>
+            <h3>公众号</h3>
+            <div className="footer-content">
+              <img 
+                src={qrcode} 
+                alt="公众号二维码" 
+                className="qrcode-image"
+              />
+            </div>
           </div>
         </div>
         <div className="footer-row">

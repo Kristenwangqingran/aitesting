@@ -19,18 +19,30 @@
 
 .footer-column {
   flex: 1;
-  margin-right: 5rem; /* 增加列之间的间距 */
+  margin-right: 5rem;
   display: flex;
   flex-direction: column;
 }
 
 .footer-column:last-child {
   margin-right: 0;
+  text-align: left;
 }
 
-/* 以下所有样式保持完全不变 */
+.footer-column:last-child h3 {
+  text-align: left;
+  width: 100%;
+}
+
+.footer-column:last-child .footer-content {
+  align-items: flex-start;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .footer h3 {
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
   font-size: 1.2rem;
   font-weight: bold;
   color: white;
@@ -41,13 +53,15 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   text-align: left;
+  align-items: flex-start;
 }
 
 .footer p {
   margin: 0.3rem 0;
   font-size: 0.85rem;
+  line-height: 1.6;
 }
 
 .footer ul {
@@ -58,6 +72,7 @@
 
 .footer ul li {
   margin: 0.3rem 0;
+  line-height: 1.6;
 }
 
 .footer a {
@@ -72,11 +87,23 @@
   color: #f39c12;
 }
 
+.qrcode-image {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  margin: 0;
+  display: block;
+  border-radius: 4px;
+  background-color: white;
+  padding: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
 .footer-row:last-child {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin-top: 1rem;
+  margin-top: 2rem;
   font-size: 0.75rem;
   font-weight: normal;
   color: #b0b0b0;
@@ -93,6 +120,18 @@
   color: #f39c12;
 }
 
+/* 修改第二列和第三列的内容样式 */
+.footer-column:nth-child(2) .footer-content,
+.footer-column:last-child .footer-content {
+  padding-left: 50px;  /* 增加左内边距到50px */
+}
+
+/* 修改第二列和第三列的标题样式 */
+.footer-column:nth-child(2) h3,
+.footer-column:last-child h3 {
+  padding-left: 50px;  /* 标题也增加到相同的左内边距 */
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .footer-row {
@@ -101,6 +140,30 @@
 
   .footer-column {
     margin-right: 0;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .footer-content {
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-column:last-child,
+  .footer-column:last-child h3,
+  .footer-column:last-child .footer-content {
+    text-align: center;
+    align-items: center;
+  }
+  
+  .qrcode-image {
+    margin: 0 auto;
+  }
+
+  /* 移动端时取消左内边距 */
+  .footer-column:nth-child(2) .footer-content,
+  .footer-column:last-child .footer-content,
+  .footer-column:nth-child(2) h3,
+  .footer-column:last-child h3 {
+    padding-left: 0;
   }
 }

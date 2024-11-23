@@ -1,57 +1,90 @@
 /* Header.css */
 .header {
     background-color: #2c3e50; /* 深蓝色背景 */
-    padding: 1.5rem 2rem; /* 增加内边距 */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 阴影效果 */
-  }
+    padding: 2rem 2rem; /* 增加上下内边距 */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* 增强阴影效果 */
+}
   
-  .navbar {
+.navbar {
     display: flex;
-    justify-content: space-between; /* 左中右布局 */
-    align-items: center; /* 垂直居中对齐 */
-  }
+    justify-content: center; /* 改为居中 */
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 40px; /* 设置固定高度 */
+}
   
-  .logo {
+.logo {
     color: white; /* logo 字体颜色 */
     font-size: 1.5rem; /* logo 字体大小 */
     font-weight: bold; /* 加粗 logo 字体 */
-  }
+    margin: 0; /* 移除默认的标题边距 */
+}
   
-  nav ul {
-    display: flex; /* 水平排列导航链接 */
-    gap: 3rem; /* 增加导航链接之间的间距 */
-    list-style: none; /* 移除列表默认样式 */
+nav {
+    width: auto; /* 改为自动宽度 */
+    display: flex;
+    justify-content: center; /* 居中对齐 */
+}
+  
+nav ul {
+    display: flex;
+    gap: 5rem; /* 设置固定的间距 */
+    list-style: none;
     margin: 0;
     padding: 0;
-  }
+    height: 100%;
+    align-items: center; /* 垂直居中 */
+    width: auto; /* 改为自动宽度 */
+}
   
-  nav ul li a {
-    color: white; /* 导航链接的字体颜色 */
-    font-size: 1.1rem; /* 导航链接字体大小 */
-    font-weight: 500; /* 加粗字体 */
-    text-decoration: none; /* 移除下划线 */
-    transition: color 0.3s ease; /* 悬停时颜色变化的过渡效果 */
-  }
+nav ul li a {
+    color: white;
+    font-size: 1.2rem; /* 增大字体 */
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1rem; /* 增加链接的可点击区域 */
+    border-radius: 4px;
+    white-space: nowrap; /* 防止文字换行 */
+}
   
-  nav ul li a:hover {
-    color: #f39c12; /* 悬停时变成橙色 */
-  }
+nav ul li a:hover {
+    color: #f39c12;
+    background-color: rgba(255, 255, 255, 0.1); /* 添加悬停背景效果 */
+}
   
-  .login-btn {
-    background-color: white; /* 按钮背景颜色为白色 */
-    color: #2c3e50; /* 按钮文字颜色为深蓝色 */
-    border: 2px solid #2c3e50; /* 边框颜色与导航栏背景颜色一致 */
-    padding: 0.4rem 0.8rem; /* 调整按钮的内边距 */
-    font-size: 0.9rem; /* 按钮的字体大小 */
-    border-radius: 4px; /* 按钮的圆角 */
-    cursor: pointer; /* 鼠标悬停时显示手形光标 */
-    font-weight: 500; /* 按钮文字加粗 */
-    transition: background-color 0.3s ease, color 0.3s ease; /* 悬停时背景颜色和平滑过渡 */
-  }
+/* 特别处理最后一个导航项 */
+nav ul li:last-child {
+    margin-right: 0;
+    padding-right: 50px; /* 与 Footer 的右边距保持一致 */
+}
   
-  .login-btn:hover {
-    background-color: #e67e22; /* 悬停时背景颜色变为深橙色 */
-    color: white; /* 悬停时文字颜色变为白色 */
-    border-color: #e67e22; /* 悬停时边框颜色变为深橙色 */
-  }
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .header {
+        padding: 1.5rem 1rem;
+    }
+
+    .navbar {
+        flex-direction: column;
+        height: auto;
+        gap: 1rem;
+    }
+
+    nav ul {
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap; /* 允许在小屏幕上换行 */
+    }
+
+    nav ul li a {
+        font-size: 1.1rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    nav ul li:last-child {
+        padding-right: 0;
+    }
+}
   
