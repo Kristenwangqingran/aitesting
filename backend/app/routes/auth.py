@@ -7,6 +7,7 @@ import datetime
 import random
 import string
 import base64
+import logging
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -114,75 +115,103 @@ def send_sms():
         phone = data.get('phone')
         
         if not phone:
-            return jsonify({'error': '手机号码不能为空'}), 400
+            return jsonify({'success': False, 'message': '手机号码不能为空'}), 400
             
         # 生成验证码
         code = generate_verification_code()
         
-        # 存储验证码到 session
-        session[f'sms_code_{phone}'] = code
-        current_app.logger.debug(f'存储验证码到session: phone={phone}, code={code}')
-        current_app.logger.debug(f'当前session内容: {dict(session)}')
+        # 设置 session
+        session.permanent = True  # 使 session 持久化
+        session.clear()  # 清除旧的 session 数据
+        
+        # 存储验证码和手机号到 session
+        session['verification_code'] = code
+        session['verification_phone'] = phone
+        
+        # 强制保存 session
+        session.modified = True
+        
+        # 记录日志
+        current_app.logger.debug(f'发送验证码: phone={phone}, code={code}')
+        current_app.logger.debug(f'存储后的session内容: {dict(session)}')
         
         return jsonify({
-            'message': '验证码已发送',
             'success': True,
-            'code': code  # 测试环境返回验证码
+            'message': '验证码已发送',
+            'code': code  # 仅在测试环境返回
         })
         
     except Exception as e:
-        current_app.logger.error(f"发送短信时出错: {str(e)}")
-        return jsonify({'error': '发送验证码失败'}), 500
+        current_app.logger.error(f"发送验证码错误: {str(e)}")
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 @auth_bp.route('/verify-sms', methods=['POST'])
 def verify_sms():
-    data = request.get_json()
-    phone = data.get('phone')
-    code = data.get('code')
-    
-    current_app.logger.debug(f'验证验证码: phone={phone}, code={code}')
-    current_app.logger.debug(f'当前session内容: {dict(session)}')
-    
-    stored_code = session.get(f'sms_code_{phone}')
-    current_app.logger.debug(f'存储的验证码: {stored_code}')
-    
-    if not stored_code:
-        return jsonify({
-            'success': False,
-            'message': '验证码不存在或已过期'
-        }), 400
+    try:
+        data = request.get_json()
+        phone = data.get('phone')
+        code = data.get('code')
         
-    if stored_code != code:
+        # 详细的日志记录
+        current_app.logger.debug(f'验证请求: phone={phone}, code={code}')
+        current_app.logger.debug(f'当前session内容: {dict(session)}')
+        
+        stored_code = session.get('verification_code')
+        stored_phone = session.get('verification_phone')
+        
+        current_app.logger.debug(f'存储的验证码: {stored_code}')
+        current_app.logger.debug(f'存储的手机号: {stored_phone}')
+        
+        if not stored_code or not stored_phone:
+            return jsonify({
+                'success': False,
+                'message': '验证码已过期或不存在',
+                'debug': {
+                    'stored_code': stored_code,
+                    'stored_phone': stored_phone,
+                    'session_content': dict(session)
+                }
+            }), 400
+            
+        if stored_phone != phone:
+            return jsonify({
+                'success': False,
+                'message': '手机号不匹配',
+                'debug': {
+                    'stored_phone': stored_phone,
+                    'submitted_phone': phone
+                }
+            }), 400
+            
+        if stored_code != code:
+            return jsonify({
+                'success': False,
+                'message': '验证码错误',
+                'debug': {
+                    'stored_code': stored_code,
+                    'submitted_code': code
+                }
+            }), 400
+        
+        # 验证成功后清除验证码
+        session.pop('verification_code', None)
+        session.pop('verification_phone', None)
+        
         return jsonify({
-            'success': False,
-            'message': '验证码错误'
-        }), 400
-    
-    # 验证成功后清除验证码
-    session.pop(f'sms_code_{phone}', None)
-    
+            'success': True,
+            'message': '验证成功'
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f"验证码验证错误: {str(e)}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+# 添加一个调试端点
+@auth_bp.route('/check-session', methods=['GET'])
+def check_session():
+    """用于调试 session 的端点"""
     return jsonify({
-        'success': True,
-        'message': '验证成功'
+        'session_content': dict(session),
+        'verification_code': session.get('verification_code'),
+        'verification_phone': session.get('verification_phone')
     })
-    data = request.get_json()
-    recaptcha_response = data.get('recaptcha_response')
-    
-    # 验证 reCAPTCHA
-    verify_url = 'https://www.google.com/recaptcha/api/siteverify'
-    response = requests.post(verify_url, data={
-        'secret': 'YOUR_RECAPTCHA_SECRET_KEY',
-        'response': recaptcha_response
-    })
-    
-    result = response.json()
-    if not result['success']:
-        return jsonify({
-            'success': False,
-            'message': '验证失败'
-        }), 400
-    
-    return jsonify({
-        'success': True,
-        'message': '验证成功'
-    }) 

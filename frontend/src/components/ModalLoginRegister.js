@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './ModalLoginRegister.css';
-import { message } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
@@ -11,27 +11,15 @@ const ModalLoginRegister = ({ onClose }) => {
   const [password, setPassword] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [countdown, setCountdown] = useState(0);
+  const [isSending, setIsSending] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSendVerificationCode = async () => {
-    if (!phone) {
-        message.error('请输入手机号');
-        return;
-    }
+    if (isSending) return;
     
-    if (phone.length !== 11) {
-        message.error('手机号必须是11位');
-        return;
-    }
-    
-    if (!/^1[3-9]\d{9}$/.test(phone)) {
-        message.error('请输入正确的手机号格式');
-        return;
-    }
-
-    setIsLoading(true);
     try {
-        const response = await fetch('http://localhost:5001/api/auth/send-sms', {
+        setIsSending(true);
+        const response = await fetch(`${API_BASE_URL}/api/auth/send-sms`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -41,32 +29,53 @@ const ModalLoginRegister = ({ onClose }) => {
                 phone: phone
             })
         });
-
+        
         const data = await response.json();
         
-        if (!response.ok) {
-            throw new Error(data.message || '发送验证码失败');
+        if (data.success) {
+            message.success('验证码已发送');
+            setCountdown(60);
+            
+            const timer = setInterval(() => {
+                setCountdown(prev => {
+                    if (prev <= 1) {
+                        clearInterval(timer);
+                        setIsSending(false);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        } else {
+            message.error(data.message || '发送失败');
+            setIsSending(false);
         }
-
-        message.success('验证码已发送');
-        console.log('验证码（测试用）:', data.code);  // 测试环境查看验证码
-        
-        setCountdown(60);
-        const timer = setInterval(() => {
-            setCountdown(prev => {
-                if (prev <= 1) {
-                    clearInterval(timer);
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
-        
     } catch (error) {
         console.error('发送验证码失败:', error);
-        message.error(error.message || '发送验证码失败');
-    } finally {
-        setIsLoading(false);
+        message.error('发送验证码失败');
+        setIsSending(false);
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    try {
+        const verifyResponse = await fetch(`${API_BASE_URL}/api/auth/verify-sms`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                phone,
+                code: verificationCode
+            })
+        });
+        
+        const verifyData = await verifyResponse.json();
+        return verifyData;
+    } catch (error) {
+        console.error('验证码验证失败:', error);
+        throw error;
     }
   };
 
@@ -96,6 +105,7 @@ const ModalLoginRegister = ({ onClose }) => {
           headers: {
             'Content-Type': 'application/json'
           },
+          credentials: 'include',  // 添加这行
           body: JSON.stringify({
             phone,
             code: verificationCode
@@ -188,6 +198,20 @@ const ModalLoginRegister = ({ onClose }) => {
 
   const toggleMode = () => setIsLogin(!isLogin);
 
+  const renderSendButton = () => {
+    if (countdown > 0) {
+        return <Button disabled>{countdown}秒后重新发送</Button>;
+    }
+    return (
+        <Button 
+            onClick={handleSendVerificationCode}
+            disabled={isSending || !phone || phone.length !== 11}
+        >
+            {isSending ? '发送中...' : '发送验证码'}
+        </Button>
+    );
+  };
+
   return (
     <div className="modal-overlay">
       <div className="modal-content">
@@ -228,14 +252,7 @@ const ModalLoginRegister = ({ onClose }) => {
                   value={verificationCode}
                   onChange={(e) => setVerificationCode(e.target.value)}
                 />
-                <button
-                  type="button"
-                  onClick={handleSendVerificationCode}
-                  disabled={countdown > 0}
-                  className="send-code-button"
-                >
-                  {countdown > 0 ? `${countdown}s后重试` : '发送验证码'}
-                </button>
+                {renderSendButton()}
               </div>
             )}
             <input
@@ -251,7 +268,7 @@ const ModalLoginRegister = ({ onClose }) => {
           <div className="login-options">
             <a href="#" onClick={(e) => { e.preventDefault(); }}>忘记密码？</a>
             <a href="#" onClick={(e) => { e.preventDefault(); toggleMode(); }}>
-              {isLogin ? '新用��? 注册' : '已有账号? 登录'}
+              {isLogin ? '新用? 注册' : '已有账号? 登录'}
             </a>
           </div>
           {isLogin && (
