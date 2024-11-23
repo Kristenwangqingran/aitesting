@@ -1,4 +1,11 @@
-Flask==2.1.0
+Flask==2.0.1
 Flask-SQLAlchemy==2.5.1
 Flask-CORS==3.0.10
-Werkzeug==2.0.3
+Werkzeug==2.0.1
+PyJWT==2.1.0
+SQLAlchemy<2.0.0
+captcha
+aliyun-python-sdk-core
+aliyun-python-sdk-dysmsapi
+redis
+requests 

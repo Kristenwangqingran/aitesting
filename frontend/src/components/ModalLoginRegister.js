@@ -1,52 +1,155 @@
 import React, { useState } from 'react';
 import './ModalLoginRegister.css';
+import { message } from 'antd';
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
 const ModalLoginRegister = ({ onClose }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [nickname, setNickname] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
+  const [countdown, setCountdown] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSendVerificationCode = async () => {
+    if (!phone) {
+        message.error('请输入手机号');
+        return;
+    }
+    
+    if (phone.length !== 11) {
+        message.error('手机号必须是11位');
+        return;
+    }
+    
+    if (!/^1[3-9]\d{9}$/.test(phone)) {
+        message.error('请输入正确的手机号格式');
+        return;
+    }
+
+    setIsLoading(true);
+    try {
+        const response = await fetch('http://localhost:5001/api/auth/send-sms', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                phone: phone
+            })
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || '发送验证码失败');
+        }
+
+        message.success('验证码已发送');
+        console.log('验证码（测试用）:', data.code);  // 测试环境查看验证码
+        
+        setCountdown(60);
+        const timer = setInterval(() => {
+            setCountdown(prev => {
+                if (prev <= 1) {
+                    clearInterval(timer);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+        
+    } catch (error) {
+        console.error('发送验证码失败:', error);
+        message.error(error.message || '发送验证码失败');
+    } finally {
+        setIsLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (isLogin) {
-        const response = await fetch(`${API_BASE_URL}/login`, {
+      if (!isLogin) {  // 注册流程
+        // 1. 基本验证
+        if (!nickname || !phone || !verificationCode || !password) {
+          message.error('请填写所有必填项');
+          return;
+        }
+
+        if (!/^1[3-9]\d{9}$/.test(phone)) {
+          message.error('请输入正确的手机号格式');
+          return;
+        }
+
+        if (password.length < 6) {
+          message.error('密码长度不能少于6位');
+          return;
+        }
+
+        // 2. 验证短信验证码
+        const verifyResponse = await fetch(`${API_BASE_URL}/api/auth/verify-sms`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             phone,
-            password
+            code: verificationCode
           })
         });
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success) {
-            localStorage.setItem('token', data.token);
-            onClose();
+        
+        const verifyData = await verifyResponse.json();
+        
+        // 3. 如果验证码正确，直接进行注册
+        if (verifyData.success) {
+          const registerResponse = await fetch(`${API_BASE_URL}/api/auth/register`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              nickname,
+              phone,
+              password
+            })
+          });
+          
+          const registerData = await registerResponse.json();
+          if (registerData.success) {
+            message.success('注册成功！');
+            setIsLogin(true);  // 注册成功后切换到登录界面
+          } else {
+            message.error(registerData.message || '注册失败');
           }
+        } else {
+          message.error('验证码错误');
         }
       } else {
-        const response = await fetch(`${API_BASE_URL}/register`, {
+        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            nickname,
             phone,
             password
           })
         });
-        if (response.ok) {
-          alert('注册成功！');
-          setIsLogin(true);
+        const data = await response.json();
+        if (data.success) {
+          localStorage.setItem('token', data.token);
+          message.success('登录成功');
+          onClose();
+        } else {
+          message.error(data.message);
         }
       }
     } catch (error) {
-      alert(error.message || '操作失败');
+      message.error(error.message || '操作失败');
     }
   };
 
@@ -117,13 +220,30 @@ const ModalLoginRegister = ({ onClose }) => {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
             />
+            {!isLogin && (
+              <div className="verification-code">
+                <input
+                  type="text"
+                  placeholder="验证码"
+                  value={verificationCode}
+                  onChange={(e) => setVerificationCode(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={handleSendVerificationCode}
+                  disabled={countdown > 0}
+                  className="send-code-button"
+                >
+                  {countdown > 0 ? `${countdown}s后重试` : '发送验证码'}
+                </button>
+              </div>
+            )}
             <input
               type="password"
               placeholder="密码"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            {!isLogin && <span className="note">用作登录</span>}
             <button type="submit" className="submit-button">
               {isLogin ? '快速登录' : '快速注册'}
             </button>
@@ -131,7 +251,7 @@ const ModalLoginRegister = ({ onClose }) => {
           <div className="login-options">
             <a href="#" onClick={(e) => { e.preventDefault(); }}>忘记密码？</a>
             <a href="#" onClick={(e) => { e.preventDefault(); toggleMode(); }}>
-              {isLogin ? '新用户? 注册' : '已有账号? 登录'}
+              {isLogin ? '新用��? 注册' : '已有账号? 登录'}
             </a>
           </div>
           {isLogin && (
