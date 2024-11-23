@@ -195,3 +195,20 @@ input:focus {
   background-color: #d9d9d9;
   cursor: not-allowed;
 }
+
+/* 只保留微信登录按钮样式 */
+.wechat-login-btn {
+    background-color: #07C160;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 10px 0;
+    width: 100%;
+}
+
+.wechat-login-btn:hover {
+    background-color: #06ae56;
+}

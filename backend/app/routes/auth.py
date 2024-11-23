@@ -8,6 +8,10 @@ import random
 import string
 import base64
 import logging
+from wechatpy.oauth import WeChatOAuth
+from wechatpy.exceptions import WeChatOAuthException
+import qrcode
+from io import BytesIO
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -215,3 +219,78 @@ def check_session():
         'verification_code': session.get('verification_code'),
         'verification_phone': session.get('verification_phone')
     })
+
+@auth_bp.route('/wechat/login/url', methods=['GET'])
+def get_wechat_login_url():
+    try:
+        wechat_oauth = WeChatOAuth(
+            app_id=current_app.config['WECHAT_APP_ID'],
+            secret=current_app.config['WECHAT_APP_SECRET'],
+            redirect_uri=current_app.config['WECHAT_REDIRECT_URI'],
+            scope='snsapi_userinfo'
+        )
+        
+        # 生成授权URL
+        authorize_url = wechat_oauth.authorize_url
+        
+        # 生成二维码
+        qr = qrcode.QRCode(version=1, box_size=10, border=5)
+        qr.add_data(authorize_url)
+        qr.make(fit=True)
+        
+        # 将二维码转换为base64字符串
+        img = qr.make_image(fill_color="black", back_color="white")
+        buffered = BytesIO()
+        img.save(buffered, format="PNG")
+        qr_code = base64.b64encode(buffered.getvalue()).decode()
+        
+        return jsonify({
+            'success': True,
+            'qr_code': qr_code,
+            'auth_url': authorize_url
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f"生成微信登录二维码失败: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': '获取微信二维码失败'
+        }), 500
+
+@auth_bp.route('/wechat/callback', methods=['GET'])
+def wechat_callback():
+    code = request.args.get('code')
+    if not code:
+        return jsonify({'error': 'No code provided'}), 400
+    
+    try:
+        wechat_oauth = WeChatOAuth(
+            app_id=current_app.config['WECHAT_APP_ID'],
+            secret=current_app.config['WECHAT_APP_SECRET'],
+            redirect_uri=current_app.config['WECHAT_REDIRECT_URI']
+        )
+        
+        # 使用code获取access_token
+        res = wechat_oauth.fetch_access_token(code)
+        user_info = wechat_oauth.get_user_info()
+        
+        # 检查用户是否存在，不存在则创建新用户
+        user = User.query.filter_by(wechat_openid=user_info['openid']).first()
+        if not user:
+            user = User(
+                username=user_info['nickname'],
+                wechat_openid=user_info['openid'],
+                avatar=user_info['headimgurl']
+            )
+            db.session.add(user)
+            db.session.commit()
+        
+        # 生成JWT token
+        access_token = create_access_token(identity=user.id)
+        return jsonify({
+            'access_token': access_token,
+            'user': user.to_dict()
+        })
+        
+    except WeChatOAuthException as e:
+        return jsonify({'error': str(e)}), 400
