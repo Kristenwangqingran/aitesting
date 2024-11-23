@@ -7,10 +7,59 @@ const ModalLoginRegister = ({ onClose }) => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // 处理登录或注册逻辑
-    console.log(isLogin ? 'Login' : 'Register', { nickname, phone, password });
+    try {
+      if (isLogin) {
+        const response = await axios.post('http://localhost:5000/api/auth/login', {
+          phone,
+          password
+        });
+        if (response.data.success) {
+          localStorage.setItem('token', response.data.token);
+          onClose();
+        }
+      } else {
+        const response = await axios.post('http://localhost:5000/api/auth/register', {
+          nickname,
+          phone,
+          password
+        });
+        if (response.data.success) {
+          alert('注册成功！');
+          setIsLogin(true);
+        }
+      }
+    } catch (error) {
+      alert(error.response?.data?.message || '操作失败');
+    }
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    if (!phone) {
+      alert('请输入手机号');
+      return;
+    }
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/forgot-password', {
+        phone
+      });
+      if (response.data.success) {
+        alert('重置密码链接已发送到您的手机');
+      }
+    } catch (error) {
+      alert('发送重置密码请求失败');
+    }
+  };
+
+  const handleWechatLogin = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/auth/wechat/login');
+      window.location.href = response.data.auth_url;
+    } catch (error) {
+      alert('微信登录失败');
+    }
   };
 
   const toggleMode = () => setIsLogin(!isLogin);
