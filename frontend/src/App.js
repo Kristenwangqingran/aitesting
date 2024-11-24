@@ -8,6 +8,7 @@ import './App.css';
 import AITestingTools from './components/AITestingTools';
 import TestingProjects from './components/TestingProjects';
 import About from './components/About';
+import Jobs from './components/Jobs/Jobs';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="/ai-enhanced" element={<AITestingTools />} />
             <Route path="/projects" element={<TestingProjects />} />
             <Route path="/about" element={<About />} />
+            <Route path="/jobs" element={<Jobs />} />
           </Routes>
         </main>
         <Footer />
