@@ -1,37 +1,78 @@
-from flask import Flask
+from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
-from datetime import timedelta
-from flask_session import Session
+import os
+from config import Config
+import pdb
+import logging
 
-# 初始化 SQLAlchemy
+# 配置日志
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+# 创建数据库实例
 db = SQLAlchemy()
 migrate = Migrate()
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object('config.Config')
     
+    print("=== Starting Flask Application ===")
+    
+    # 从 Config 类加载配置
+    app.config.from_object(Config)
+    print("Configuration loaded")
+    
+    # 更宽松的 CORS 配置
+    CORS(app, resources={
+        r"/*": {
+            "origins": "*",
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization", "Accept", "Origin"],
+            "supports_credentials": True,
+            "max_age": 3600
+        }
+    })
+    print("CORS initialized")
+    
+    # 初始化数据库
     db.init_app(app)
     migrate.init_app(app, db)
+    print("Database initialized")
     
-    # CORS 配置
-    CORS(app, 
-         supports_credentials=True,
-         resources={
-             r"/api/*": {
-                 "origins": ["http://localhost:3000"],
-                 "methods": ["GET", "POST", "OPTIONS"],
-                 "allow_headers": ["Content-Type"],
-                 "expose_headers": ["Set-Cookie"],
-                 "supports_credentials": True
-             }
-         })
+    @app.before_request
+    def log_request_info():
+        print("\n=== Request Details ===")
+        print(f"Method: {request.method}")
+        print(f"URL: {request.url}")
+        print(f"Headers: {dict(request.headers)}")
+        print(f"Arguments: {dict(request.args)}")
+        print("=== End Request Details ===\n")
+    
+    @app.after_request
+    def after_request(response):
+        print("\n=== Response Details ===")
+        print(f"Status: {response.status}")
+        print(f"Headers: {dict(response.headers)}")
+        print("=== End Response Details ===\n")
+        return response
+    
+    # 添加一个测试路由到主应用
+    @app.route('/test')
+    def test():
+        print("Test route accessed")
+        return jsonify({"message": "Test route works!"})
     
     # 注册蓝图
-    from app.routes.auth import auth_bp
-    app.register_blueprint(auth_bp, url_prefix='/api/auth')
+    print("Registering blueprints...")
+    from app.modules.jobs.routes import jobs_bp
+    app.register_blueprint(jobs_bp, url_prefix='/api/jobs')
     
-    # 不需要 create_all() 因为我们使用 migrations
+    # 打印所有注册的路由
+    print("\n=== Registered Routes ===")
+    for rule in app.url_map.iter_rules():
+        print(f"Route: {rule.rule}, Methods: {rule.methods}")
+    print("=== End Registered Routes ===\n")
+    
     return app

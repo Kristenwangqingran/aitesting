@@ -1,102 +1,147 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Jobs.css';
 
 const Jobs = () => {
   const [activeTab, setActiveTab] = useState('recruitment');
   const [isRemote, setIsRemote] = useState(false);
   const [showJobSeekerForm, setShowJobSeekerForm] = useState(false);
+  const [recruitments, setRecruitments] = useState([]);
+  const [jobSeekers, setJobSeekers] = useState([]);
   const [newJobSeeker, setNewJobSeeker] = useState({
     name: '',
     position: '',
     experience: '',
     expectedSalary: '',
     location: '',
-    skills: ''
+    skills: '',
+    resume: null
   });
 
-  const dummyRecruitments = [
-    {
-      id: 1,
-      company: '测试科技有限公司',
-      position: '测试工程师',
-      salary: '15k-25k',
-      requirements: '3年以上测试经验，熟悉自动化测试框架',
-      location: '北京'
-    },
-    {
-      id: 2,
-      company: '智能软件科技',
-      position: '自动化测试工程师',
-      salary: '20k-35k',
-      requirements: '熟悉 Selenium、Appium，具有 CI/CD 经验',
-      location: '上海'
-    },
-    {
-      id: 3,
-      company: '互联网金融公司',
-      position: '性能测试工程师',
-      salary: '25k-40k',
-      requirements: '精通 JMeter、LoadRunner，具有大型性能测试项目经验',
-      location: '深圳'
+  // 获取招聘信息
+  const fetchRecruitments = async () => {
+    try {
+      const url = `http://localhost:3000/api/recruitments${isRemote ? '?remote=true' : ''}`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error('获取招聘信息失败');
+      }
+      const data = await response.json();
+      setRecruitments(data);
+    } catch (error) {
+      console.error('获取招聘信息出错:', error);
+      // 这里可以添加错误提示UI
     }
-  ];
+  };
 
-  const dummyJobSearches = [
-    {
-      id: 1,
-      name: '张三',
-      position: '高级测试工程师',
-      experience: '5年',
-      expectedSalary: '20k-30k',
-      location: '上海',
-      skills: 'Selenium, Python, Jenkins, 接口测试'
-    },
-    {
-      id: 2,
-      name: '李四',
-      position: '自动化测试专家',
-      experience: '8年',
-      expectedSalary: '35k-50k',
-      location: '北京',
-      skills: 'Java, TestNG, Appium, 性能测试'
-    },
-    {
-      id: 3,
-      name: '王五',
-      position: '测试开发工程师',
-      experience: '3年',
-      expectedSalary: '18k-25k',
-      location: '杭州',
-      skills: 'Python, Robot Framework, Docker'
-    },
-    {
-      id: 4,
-      name: '赵六',
-      position: '性能测试工程师',
-      experience: '4年',
-      expectedSalary: '25k-35k',
-      location: '广州',
-      skills: 'JMeter, LoadRunner, K8s, 监控工具'
+  // 获取求职信息
+  const fetchJobSeekers = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/job-seekers');
+      if (!response.ok) {
+        throw new Error('获取求职信息失败');
+      }
+      const data = await response.json();
+      setJobSeekers(data);
+    } catch (error) {
+      console.error('获取求职信息出错:', error);
+      // 这里可以添加错误提示UI
     }
-  ];
+  };
 
-  const handleJobSeekerSubmit = (e) => {
-    e.preventDefault();
-    // 这里后续需要连接后端 API
-    const newSeeker = {
-      id: dummyJobSearches.length + 1,
-      ...newJobSeeker
-    };
-    dummyJobSearches.push(newSeeker);
+  // 处理文件上传
+  const handleFileChange = (e) => {
     setNewJobSeeker({
-      name: '',
-      position: '',
-      experience: '',
-      expectedSalary: '',
-      location: '',
-      skills: ''
+      ...newJobSeeker,
+      resume: e.target.files[0]
     });
-    setShowJobSeekerForm(false);
+  };
+
+  // 修改提交处理函数，使用 FormData 处理文件上传
+  const handleJobSeekerSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      formData.append('name', newJobSeeker.name);
+      formData.append('position', newJobSeeker.position);
+      formData.append('experience', newJobSeeker.experience);
+      formData.append('expectedSalary', newJobSeeker.expectedSalary);
+      formData.append('location', newJobSeeker.location);
+      formData.append('skills', newJobSeeker.skills);
+      if (newJobSeeker.resume) {
+        formData.append('resume', newJobSeeker.resume);
+      }
+
+      const response = await fetch('http://localhost:3000/api/job-seekers', {
+        method: 'POST',
+        body: formData,  // 不需要设置 Content-Type，浏览器会自动设置
+      });
+
+      if (!response.ok) {
+        throw new Error('发布求职信息失败');
+      }
+
+      // 发布成功后刷新列表
+      await fetchJobSeekers();
+      
+      // 重置表单
+      setNewJobSeeker({
+        name: '',
+        position: '',
+        experience: '',
+        expectedSalary: '',
+        location: '',
+        skills: '',
+        resume: null
+      });
+      setShowJobSeekerForm(false);
+    } catch (error) {
+      console.error('发布求职信息出错:', error);
+    }
+  };
+
+  // 发布新的招聘信息
+  const postRecruitment = async (recruitmentData) => {
+    try {
+      const response = await fetch('http://localhost:3000/api/recruitments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...recruitmentData,
+          jobTitle: recruitmentData.jobTitle,    // 确保包含新字段
+          salary: recruitmentData.salary         // 确保包含新字段
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('发布招聘信息失败');
+      }
+
+      await fetchRecruitments();
+    } catch (error) {
+      console.error('发布招聘信息出错:', error);
+    }
+  };
+
+  // 组件加载时获取数据
+  useEffect(() => {
+    fetchRecruitments();
+    fetchJobSeekers();
+  }, []);
+
+  // 当切换标签时重新获取对应数据
+  useEffect(() => {
+    if (activeTab === 'recruitment') {
+      fetchRecruitments();
+    } else {
+      fetchJobSeekers();
+    }
+  }, [activeTab, isRemote]);
+
+  const handleRemoteToggle = (e) => {
+    setIsRemote(e.target.checked);
+    fetchRecruitments();
   };
 
   return (
@@ -122,7 +167,7 @@ const Jobs = () => {
             <input
               type="checkbox"
               checked={isRemote}
-              onChange={(e) => setIsRemote(e.target.checked)}
+              onChange={handleRemoteToggle}
             />
             <span className="slider"></span>
           </label>
@@ -132,24 +177,22 @@ const Jobs = () => {
       <div className="jobs-content">
         {activeTab === 'recruitment' ? (
           <div className="recruitment-list">
-            {dummyRecruitments.map(job => (
+            {recruitments.map(job => (
               <div key={job.id} className="recruitment-card">
-                <div className="recruitment-header">
-                  <h3>{job.position}</h3>
-                  <span className="post-time">发布于 3 天前</span>
+                <div className="recruitment-title">
+                  <h3>【{job.jobType}】{job.jobTitle}</h3>
                 </div>
-                <div className="recruitment-info">
-                  <div className="company-info">
-                    <span className="company-name">{job.company}</span>
-                    <span className="dot-separator">·</span>
-                    <span className="location">{job.location}</span>
+                <div className="recruitment-meta">
+                  <div className="meta-tags">
+                    <span className="meta-tag">招聘&找人</span>
+                    {job.isRemote && <span className="meta-tag">远程工作</span>}
+                    <span className="meta-tag">{job.position}</span>
+                    <span className="meta-tag">{job.salary}</span>
+                    {job.tags && job.tags.map((tag, index) => (
+                      <span key={index} className="meta-tag">{tag}</span>
+                    ))}
                   </div>
-                  <div className="job-tags">
-                    <span className="job-tag">远程工作</span>
-                    <span className="job-tag">同城站场</span>
-                  </div>
-                  <p className="salary">{job.salary}</p>
-                  <p className="requirements">{job.requirements}</p>
+                  <span className="post-time">发布于 {job.createdAt}</span>
                 </div>
               </div>
             ))}
@@ -164,7 +207,7 @@ const Jobs = () => {
             </button>
 
             <div className="job-search-list">
-              {dummyJobSearches.map(seeker => (
+              {jobSeekers.map(seeker => (
                 <div key={seeker.id} className="seeker-card">
                   <h3>{seeker.position}</h3>
                   <p className="name">{seeker.name}</p>
@@ -227,6 +270,21 @@ const Jobs = () => {
                     onChange={(e) => setNewJobSeeker({...newJobSeeker, skills: e.target.value})}
                     required
                   />
+                  
+                  <div className="file-input-container">
+                    <label htmlFor="resume">上传简历</label>
+                    <input
+                      type="file"
+                      id="resume"
+                      accept=".pdf,.doc,.docx"  // 限制文件类型
+                      onChange={handleFileChange}
+                    />
+                    {newJobSeeker.resume && (
+                      <span className="file-name">
+                        已选择: {newJobSeeker.resume.name}
+                      </span>
+                    )}
+                  </div>
                   
                   <div className="form-buttons">
                     <button type="submit">发布</button>
